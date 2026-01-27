@@ -3,6 +3,13 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# snakemake & slurm logs
+slurm-output
+.snakemake
+
+# output files
+output
+
 # C extensions
 *.so
 

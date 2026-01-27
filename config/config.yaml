@@ -1,0 +1,50 @@
+pathvars:
+  output: "output"
+
+bp_rule_graphs: "resources/graph4.adj"
+
+sequence_length: 12
+
+unfolded: "............"
+
+viennaRNA:
+  alphabet: "GACU"
+
+# reference gp map for mfe propensity calculation
+mfe_prop_ref_gp_map:  
+  "viennaRNA"
+
+alt_alphabet: JKLM
+
+folding_params:
+  min_loop: 3  # minimum size of loops
+  hbonds_below_max: 3  # include structures with up to 3 hydrogen bonds below the max in the permissible set
+  permis_set_max: 10000  # maximum number of structures per permissble set
+
+bp_rules:
+  - "01"
+  # - "02"
+  # - "03"
+  # - "04"
+  # - "05"
+  # - "06"
+  # - "07"
+  # - "08"
+  # - "09"
+  # - "10" 
+
+canonical_rule: "04"
+
+file_format_params:
+  gp_map_col_sep: " "
+
+fl_params:
+  N: 1
+  min_f: 0
+  max_f: 1
+
+evo_sim_params:
+  pop_size: 1000000
+  sample_size: 10000
+  max_steps: 1000
+
