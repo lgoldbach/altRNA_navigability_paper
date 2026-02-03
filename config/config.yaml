@@ -23,15 +23,15 @@ folding_params:
 
 bp_rules:
   - "01"
-  # - "02"
-  # - "03"
-  # - "04"
-  # - "05"
-  # - "06"
-  # - "07"
-  # - "08"
-  # - "09"
-  # - "10" 
+  - "02"
+  - "03"
+  - "04"
+  - "05"
+  - "06"
+  - "07"
+  - "08"
+  - "09"
+  - "10" 
 
 canonical_rule: "04"
 
@@ -39,12 +39,19 @@ file_format_params:
   gp_map_col_sep: " "
 
 fl_params:
-  N: 1
+  N: 200
   min_f: 0
   max_f: 1
 
 evo_sim_params:
-  pop_size: 1000000
-  sample_size: 10000
+  pop_size: 1000000  # population size
+  sample_size: 1000  # number of simulations per fitness landscape
   max_steps: 1000
+
+# the resources below are exessive for most rules but
+# adapting resources too much would often cause errors on our cluster and
+# this was a stable setup.
+max_runtime: "1d"  # 1 day
+min_mem_per_cpu: 20000   
+
 

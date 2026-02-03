@@ -38,81 +38,70 @@ if __name__ ==  "__main__":
 
     G = pickle.load(open(args.gp_map, "rb"))
 
+    print("Load complete", flush=True)
     phenotypes = G.phenotype_set
+    print("Ph. set complete", flush=True)
     
-    # load fl. There is no target phenotype yet. All phenotype have fitness
+    # load fl. There will be no new target phenotype selected. All phenotype have fitness
     # in the interval [0, 1)
-    ph_to_fitness_original = {}
+    ph_to_fitness = {}
+    max_fit = 0
     with open(args.fl, "r") as f:
-            for line in f:
-                data = line.strip().split(" ")
-                phenotype = data[0]
-                fitness = float(data[1])
-                ph_to_fitness_original[phenotype] = fitness
+        for line in f:
+            data = line.strip().split(" ")
+            phenotype = data[0]
+            fitness = float(data[1])
+            ph_to_fitness[phenotype] = fitness
+            if fitness > max_fit:
+                max_fit = fitness
+                print("X", max_fit, phenotype, flush=True)
+    print("f loop complete", flush=True)
+    fix_prob = lambda x, y: kimura_fixation_from_fitness(x, y, N=args.population_size)
+    print("fix prob done complete", flush=True)
+    T = pairwise_transition_prob_dict(f_map=ph_to_fitness, func=fix_prob)
+
+    print("Transition matrix complete", flush=True)
+    all_nodes = set(G.genotypes)
+    print("Genotype sets complete", flush=True)
+    # phenotypes to avoid as starting nodes, e.g. lethal ones.
+    if args.avoid:
+        # get all lethal nodes
+        lethal_nodes = [g for i, g in enumerate(G.genotypes) if G.phenotypes[i]==args.avoid]
+
+    # extract nodes that are not target (or lethal if applicable)
+    potential_starting_nodes = list(all_nodes.difference(set(lethal_nodes)))
     
-    # every phenotype is the target at least once
-    for target_ph in phenotypes:
-        print(target_ph, flush=True)
-        # read in fitness landscape
-        ph_to_fitness = ph_to_fitness_original.copy()
-        ph_to_fitness[target_ph] = 1  # set fitness of target to 1
+    start_gt = rng.choice(potential_starting_nodes, size=min(args.sample_size_walks, len(potential_starting_nodes)), replace=False)
 
-        print("A", flush=True)
-        # fixartion probability
-        fix_prob = lambda x, y: kimura_fixation_from_fitness(x, y, N=args.population_size)
-        print("B", flush=True)
+    adaptive_walk_lengths = []  # store adaptive walk lenghts
+    paths = []  # store whole paths of genotypes 
 
-        a = datetime.datetime.now()
-        # precompute transition probabilities between any pairs of phenotypes
-        T = pairwise_transition_prob_dict(f_map=ph_to_fitness, func=fix_prob)
-        b = datetime.datetime.now()
-        c = b-a
-        print(c.seconds/60, c.seconds, flush=True)
-
-        all_nodes = set(G.genotypes)
-        # get list of target nodes. Do not start walks from there (would be redundant)
-        non_starting_nodes = [g for i, g in enumerate(G.genotypes) if G.phenotypes[i]==target_ph]
-
-        # phenotypes to avoid as starting nodes, e.g. lethal ones.
-        if args.avoid:
-            # get all lethal nodes
-            lethal_nodes = [g for i, g in enumerate(G.genotypes) if G.phenotypes[i]==args.avoid]
-            non_starting_nodes += lethal_nodes  # also disallow lethal nodes as starting nodes
-        # extract nodes that are not target (or lethal if applicable)
-        potential_starting_nodes = list(all_nodes.difference(set(non_starting_nodes)))
+    print("Start adaptive walks", flush=True)
+    for g in start_gt:
+        # store adaptive walks by target phenotype
+        path = productive_adaptive_walk_w_T(G, g,
+                                fitness_function=ph_to_fitness, 
+                                T=T,
+                                max_steps=args.max_steps,
+                                rng=rng, max_fit=max_fit)
         
-        start_gt = rng.choice(potential_starting_nodes, size=min(args.sample_size_walks, len(potential_starting_nodes)), replace=False)
+        print(ph_to_fitness[G.map(path[-1])], G.map(path[-1]), flush=True)
+        if ph_to_fitness[G.map(path[-1])] == max_fit:  # walk reached target
+            adaptive_walk_lengths.append(len(path))
+        else:
+            adaptive_walk_lengths.append(-1)  # walk didn't reach target
 
-        print(start_gt, flush=True)
-        adaptive_walk_lengths = []  # store adaptive walk lenghts for each phenotype
-        paths = []  # store whole paths of genotypes 
+        paths.append(path)  # save path
+    print("Finished adaptive walks", flush=True)
 
-        for g in start_gt:
-            # store adaptive walks by target phenotype
-            path = productive_adaptive_walk_w_T(G, g,
-                                    fitness_function=ph_to_fitness, 
-                                    T=T,
-                                    max_steps=args.max_steps,
-                                    rng=rng)
-            
-            if ph_to_fitness[G.map(path[-1])] == 1:  # walk reached target
-                adaptive_walk_lengths.append(len(path))
-            else:
-                adaptive_walk_lengths.append(-1)  # walk didn't reach target
+    # Write adaptive walk path each paths of genotypes into a single line each 
+    with open(args.paths, "a") as file:
+        for path in paths:
+            file.write(" ".join(path) + "\n")
+    print("Finish writing paths", flush=True)
+    # record the adaptive walk lenghts
+    with open(args.walk_lengths, "a") as file:
+        for lengths in adaptive_walk_lengths:
+            file.write(str(lengths) + "\n")
+
     
-            paths.append(path)  # save path
-        
-
-        # Write adaptive walk path each paths of genotypes into a single line each 
-        with open(args.paths, "a") as file:
-            file.write(target_ph + "\n")
-            for path in paths:
-                file.write(" ".join(path) + "\n")
-        
-        # record the adaptive walk lenghts
-        with open(args.walk_lengths, "a") as file:
-            file.write(target_ph + "\n")
-            for lengths in adaptive_walk_lengths:
-                file.write(str(lengths) + "\n")
-
-        

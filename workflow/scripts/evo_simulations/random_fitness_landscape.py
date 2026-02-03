@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+print("AAA", flush=True)
+
 import argparse
 import pickle
 import networkx as nx
@@ -30,6 +32,7 @@ if __name__ ==  "__main__":
     parser.add_argument("-o", "--output", help="Output file name", 
                         type=str, required=True)
 
+    print("B", flush=True)
     args = parser.parse_args()
     
     phenotypes = []
@@ -37,6 +40,7 @@ if __name__ ==  "__main__":
         for line in f:
             phenotypes.append(line.strip())
     
+    print("B", flush=True)
     rng = np.random.default_rng()
     ph_to_f = {}
     # randomly assign fitness from the open interval (low_f, upp_f), i.e. for
@@ -61,7 +65,8 @@ if __name__ ==  "__main__":
     #     while global_peak == args.lethal_ph:  # don't allow lethal ph to be global peak
     #         global_peak = np.random.choice(phenotypes)
     #     ph_to_f[global_peak] = args.upp_f
-
+    print("C", flush=True)
     with open(args.output, "w") as f:
         for ph in ph_to_f:
             f.write(ph + " " + str(ph_to_f[ph]) + "\n")
+    print("D", flush=True)

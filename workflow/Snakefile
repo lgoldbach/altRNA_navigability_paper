@@ -4,17 +4,15 @@ configfile: "config/config.yaml"
 include: "rules/compute_mfe_propensities.smk"
 include: "rules/gp_mapping.smk"
 include: "rules/evo_simulations.smk"
+include: "rules/plotting.smk"
 
 
 ### Rule all is set up list all the figures as targets (maybe additional files
 ### if necessary)
 rule all:
     input:
-        expand("<output>/gp_map_{bp}/fitness_landscapes/fl_{fl_id}/fl.txt", fl_id=range(config["fl_params"]["N"]), bp=config["bp_rules"])
-    # "fig2a.pdf"
-    # "fig2b.pdf"
-    # "fig2c.pdf"
-    # permissible_set_sizes.txts
+        expand("<output>/figures/navigability_boxplot_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/figures/viennaRNA_bp{ref_bp}_comparison_pop{pop_size}.pdf", ref_bp=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"])
 
 # use the three steps below as a test of the new structure for the simpler
 # case of the viennaRNA propensity score analysis
@@ -24,5 +22,4 @@ rule all:
 # import mfe_propensity.smk module
 
 # import rna_gp_mapping
-
 
