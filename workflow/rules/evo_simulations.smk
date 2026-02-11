@@ -59,3 +59,19 @@ rule compute_navigability_per_fl:
         "-w {input.walk_length_files} "  # assumes one per fitness landscape
         "-f {input.fitness_landscapes} "
         "-o {output} "
+
+rule compute_combined_peak_size_per_fl:
+    input:
+        nc_graph="<output>/gp_map_{bp}/nc_graph.pickle",
+        fitness_landscapes=expand("<output>/gp_map_{{bp}}/fitness_landscapes/fl_{fl_id}/fl.txt", fl_id=range(config["fl_params"]["N"])),
+    output:
+        "<output>/gp_map_{bp}/combined_peak_sizes_per_fl.txt"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/evo_simulations/compute_combined_peak_size_per_fl.py "
+        "-n {input.nc_graph} "
+        "-f {input.fitness_landscapes} "
+        "-o {output} "
+

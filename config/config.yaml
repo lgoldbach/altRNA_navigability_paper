@@ -54,4 +54,7 @@ evo_sim_params:
 max_runtime: "1d"  # 1 day
 min_mem_per_cpu: 20000   
 
+fig_6b:
+  comp1: "06"
+  comp2: "09"
 

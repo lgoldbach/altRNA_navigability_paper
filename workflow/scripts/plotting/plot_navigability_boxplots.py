@@ -79,6 +79,7 @@ if __name__ ==  "__main__":
         mean = np.mean(d)
         median = np.median(d)
 
+        print(i, mean)
         # ax1.vlines(i, q1, q3, color="black", linewidth=1, zorder=5)
         if i == 1:  # only add label once for legend
             ax.plot([i-.1, i+0.1], [mean, mean], color="red", zorder=10, linewidth=3, label="Mean: g-p map navigability") 

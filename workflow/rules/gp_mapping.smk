@@ -89,6 +89,9 @@ rule compute_phenotype_distribution:
         gp_map="{path}/gp_map.txt"
     output:
         "{path}/phenotype_distribution.txt"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
     shell:
         "compute_phenotype_distribution.py "
         "-f {input} "
@@ -102,6 +105,9 @@ rule build_nc_graph:
         nc_to_genotype="{path}/nc_to_genotype.txt"
     params:
         ignore=config["unfolded"]
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
     shell:
         "nc_graph.py "
         "-f {input} "
@@ -114,6 +120,9 @@ rule nc_graph_to_nc_sizes_txt:
         "{path}/nc_graph.pickle"
     output:
         "{path}/neutral_component_sizes.txt"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
     run:
         import pickle
         # load nc graph and write nc sizes into a txt file
