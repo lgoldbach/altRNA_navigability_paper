@@ -51,6 +51,8 @@ if __name__ ==  "__main__":
     ax.set_xlabel("Peak phenotype frequency (log10)", fontsize=axislabel_size)
     ax.set_ylabel("Average navigability", fontsize=axislabel_size)
 
+    ax.set_ylim(-0.01, 1.01)
+
     ax.tick_params(axis='both', which='major', labelsize=labelsize)
     ax.tick_params(axis='both', which='minor', labelsize=labelsize)
 

@@ -87,11 +87,14 @@ if __name__ ==  "__main__":
             ax.plot([i-.1, i+0.1], [mean, mean], color="red", zorder=10, linewidth=3)
 
 
-    ax.set_ylabel("Fraction of successful adaptive walks\nper target phenotype", fontsize=15)
-    ax.set_xlabel("g-p map", fontsize=15)
+    ax.set_ylabel("Navigability", fontsize=15)
+    ax.set_xlabel("GP map", fontsize=15)
 
-    ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.tick_params(axis='both', which='minor', labelsize=15)
+    ax.tick_params(axis='y', which='major', labelsize=18)
+    ax.tick_params(axis='y', which='minor', labelsize=18)
+
+    ax.tick_params(axis='x', which='major', labelsize=15)
+    ax.tick_params(axis='x', which='minor', labelsize=15)
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_xticks(list(range(0, 10)))
@@ -104,8 +107,7 @@ if __name__ ==  "__main__":
     # plt.setp(l.get_title(),fontsize=12)
 
     # ax.legend(loc="lower left", frameon=False, fancybox=False, prop={'size': 15})
-
-    ax.set_ylim(0, 1)
+    ax.set_ylim(-0.01, 1.01, emit=True)
 
     plt.tight_layout()
     plt.savefig(args.output, format="pdf", dpi=30)

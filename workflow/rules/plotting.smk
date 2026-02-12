@@ -72,3 +72,18 @@ rule plot_navigability_over_peak_ratio:
         "-f {input.phenotype_distribution} "
         "-p {input.per_fl_combined_peak_size} "
         "-o {output} "
+
+rule plot_peak_sizes_vs_prediction:
+    input:
+        nc_graphs=expand("<output>/gp_map_{bp}/nc_graph.pickle", bp=config["bp_rules"]),
+        per_fl_combined_peak_size=expand("<output>/gp_map_{bp}/combined_peak_sizes_per_fl.txt", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/peak_sizes_vs_prediction{pop_size}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_peak_sizes_vs_prediction.py "
+        "-n {input.nc_graphs} "
+        "-p {input.per_fl_combined_peak_size} "
+        "-o {output} "

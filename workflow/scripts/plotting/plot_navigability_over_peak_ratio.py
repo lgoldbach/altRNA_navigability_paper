@@ -76,10 +76,10 @@ if __name__ ==  "__main__":
     
     ax1.set_xlabel("f_glo/(f_loc+f_glo)", size=15)
     ax1.set_ylabel("Navigability", size=15)
-    ax1.set_xlim(0, 1)
-    ax1.set_ylim(0, 1)
-    ax1.tick_params(axis='both', which='major', labelsize=15)
-    ax1.tick_params(axis='both', which='minor', labelsize=15)
+    ax1.set_xlim(-0.01, 1.01)
+    ax1.set_ylim(-0.01, 1.01)
+    ax1.tick_params(axis='both', which='major', labelsize=18)
+    ax1.tick_params(axis='both', which='minor', labelsize=18)
     # ax1.legend(fontsize=6, title="GP map", loc="lower right", frameon=False)
 
     r, p = pearsonr(mean_loc_peak_fracs, mean_navigs)
@@ -89,8 +89,8 @@ if __name__ ==  "__main__":
     ax2.set_xlabel("local peak fraction f_loc", size=15)
     ax2.set_ylabel("Navigability", size=15)
     ax2.set_ylim(0, 1)
-    ax2.tick_params(axis='both', which='major', labelsize=15)
-    ax2.tick_params(axis='both', which='minor', labelsize=15)
+    ax2.tick_params(axis='both', which='major', labelsize=18)
+    ax2.tick_params(axis='both', which='minor', labelsize=18)
 
     plt.tight_layout()
     plt.savefig(args.output, format="pdf", dpi=30)
