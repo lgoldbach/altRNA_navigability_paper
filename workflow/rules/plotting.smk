@@ -56,6 +56,24 @@ rule plot_triple_comp_navig_over_peak_freq:
         "-i {params.ignore} "
         "-o {output} "
 
+rule plot_navig_over_peak_freq_all:
+    input:
+        ph_dists=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+        navigs=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_over_freq_all_pop_size{pop_size}.pdf"
+    params:
+        ignore=config["unfolded"]
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navig_over_peak_freq_all.py "
+        "-p {input.ph_dists} "
+        "-n {input.navigs} "
+        "-i {params.ignore} "
+        "-o {output} "
+
 rule plot_navigability_over_peak_ratio:
     input:
         per_fl_navigability=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}.txt", bp=config["bp_rules"]),
@@ -86,4 +104,19 @@ rule plot_peak_sizes_vs_prediction:
         "workflow/scripts/plotting/plot_peak_sizes_vs_prediction.py "
         "-n {input.nc_graphs} "
         "-p {input.per_fl_combined_peak_size} "
+        "-o {output} "
+
+rule plot_neigh_div_degeneracy_relation:
+    input:
+        nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
+        gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
+    output:
+        "<output>/figures/fig6_neigh_div_degen_relation.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_neigh_div_bp_deg_relation.py "
+        "-g {input.gp_maps} "
+        "-n {input.nc_to_gt_files} "
         "-o {output} "

@@ -102,7 +102,7 @@ rule build_nc_graph:
         "{path}/gp_map.pickle"
     output:
         nc_graph="{path}/nc_graph.pickle",
-        nc_to_genotype="{path}/nc_to_genotype.txt"
+        nc_to_genotype="{path}/nc_to_gt.txt"
     params:
         ignore=config["unfolded"]
     resources:

@@ -19,18 +19,18 @@ if __name__ ==  "__main__":
     parser.add_argument("-o", "--output", help="Output file name "
                         "(should end in .pdf)", required=True)
 
-
     args = parser.parse_args()
 
-    fig, ax = plt.subplots()
-    ax.set_box_aspect(1)
-    
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 15))
+    for ax in axes.flat:
+        ax.set_box_aspect(1)
+
     labelsize=18
     axislabel_size=18
-
-    colors = ["C3", "C5", "C8"]
     
-    for c, navig_f, ph_dist_f in zip(colors, args.navig, args.ph_dist):
+    id_mod = 0  # keep track of whether we have plotted canonical data yet to plot inside right plot
+    axes_flat = axes.flat
+    for i, (navig_f, ph_dist_f) in enumerate(zip(args.navig, args.ph_dist)):
         ph, freq = load_phenotype_and_metric_from_file(ph_dist_f, dtype=int, ignore=args.ignore)
 
         sum_f = np.sum(freq)
@@ -45,17 +45,27 @@ if __name__ ==  "__main__":
             if ph in navigs_per_ph:
                 y.append(np.mean(navigs_per_ph[ph]))
                 x.append(f)
+        
+        c = f"C{i}"
+        if i == 3:   # plot canonical data in all plots as reference
+            for ax_ in axes_flat:
+                ax_.scatter(np.log10(x), y, color=c, alpha=.8, s=35)
+                ax_.vlines(np.log10(np.mean(x)), -0.01, 1.01, color=c, zorder=-10)
+            id_mod = -1
+        
+        ax = axes_flat[i+id_mod]
 
         ax.scatter(np.log10(x), y, color=c, alpha=.8, s=35)
         ax.vlines(np.log10(np.mean(x)), -0.01, 1.01, color=c, zorder=-10)
     # ax.scatter(np.log10([10**-1.1, 10**-1.2, 10**-1.5, 10**-1.7]), [0.9]*4)
-    ax.set_xlabel("Peak phenotype frequency (log10)", fontsize=axislabel_size)
-    ax.set_ylabel("Average navigability", fontsize=axislabel_size)
+    # ax.set_xlabel("Peak phenotype frequency (log10)", fontsize=axislabel_size)
+    # ax.set_ylabel("Average navigability", fontsize=axislabel_size)
 
-    ax.set_ylim(-0.01, 1.01)
+        ax.set_ylim(-0.01, 1.01)
+        ax.set_xlim(-4.3, -0.2)
 
-    ax.tick_params(axis='both', which='major', labelsize=labelsize)
-    ax.tick_params(axis='both', which='minor', labelsize=labelsize)
+        ax.tick_params(axis='both', which='major', labelsize=labelsize)
+        ax.tick_params(axis='both', which='minor', labelsize=labelsize)
 
     # ax3.legend(loc="upper left", frameon=False, fancybox=False, prop={'size': 18})
     plt.tight_layout()        

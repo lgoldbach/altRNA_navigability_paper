@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import pickle
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
 from rna_folding.parsing import many_to_one_map_from_file_to_dict
 from rna_folding.base_pairing import BasePairing
+from matplotlib.ticker import MaxNLocator
 
 def get_nc_to_gt(nc_to_gt_path):
     nc_to_gt = {}
@@ -85,23 +87,23 @@ def get_non_neutral_neighbors(gp_map, gt):
     return non_neu_neighs
 
 
-def get_n_non_neutral_neighbors(gts, gp_map, n, unique_n):
+def get_n_non_neutral_neighbors(gts, gp_map, n, unique_n, rng):
     non_neut_neighs = []
     for i in range(n):
-        nc_gt = np.random.choice(gts, size=1)[0]
+        nc_gt = rng.choice(gts, size=1)[0]
         neighs = get_non_neutral_neighbors(gp_map, nc_gt)
         if neighs:
-            non_neut_neigh = np.random.choice(neighs, size=1)[0]
+            non_neut_neigh = rng.choice(neighs, size=1)[0]
             non_neut_neighs.append(non_neut_neigh)
     non_neut_neighs = np.unique(non_neut_neighs)[:unique_n]
     print(f"Only found: {len(non_neut_neighs)} non-neutral neighbors")
     return non_neut_neighs
 
-def get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_i,  bp, sample_size, unique_n):
+def get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_i,  bp, sample_size, unique_n, rng):
     nc_gts = nc_to_gt[nc_i]
     print("NC size: ", len(nc_gts))
 
-    non_neu_neighs = get_n_non_neutral_neighbors(nc_gts, gp_map, sample_size, unique_n)
+    non_neu_neighs = get_n_non_neutral_neighbors(nc_gts, gp_map, sample_size, unique_n, rng)
 
     id_mtx_nc = get_pairwise_identical_sites(non_neu_neighs, l=12)
     
@@ -130,12 +132,24 @@ if __name__ ==  "__main__":
     ax1.set_box_aspect(1)
     ax2.set_box_aspect(1)
 
+    id_sites_means = []
+    deg_sites_means = []
+
+    xs = []
+    ys = []
+
+    seed = np.random.randint(low=1, high=10000)
+    # seed=
+    rng = np.random.default_rng(seed)
+    print(f"RANDOM SEED: {seed}")
+
+    gave_label = False
     for bp, (gp_map_f, nc_to_gt_f) in enumerate(zip(args.gp_map, args.nc_to_gt), start=1):
         gp_map = pickle.load(open(gp_map_f, "rb"))
         nc_to_gt = get_nc_to_gt(nc_to_gt_f)
 
         ncs = list(nc_to_gt.keys())
-        np.random.shuffle(ncs)  
+        rng.shuffle(ncs)
 
         nc_id = None
         for nc in ncs:
@@ -146,46 +160,85 @@ if __name__ ==  "__main__":
             print("No neutral component found")
             break
 
-        nc_gts, id_mtx, id_mtx_red = get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_id, bp, 1000, 200)
+        nc_gts, id_mtx, id_mtx_red = get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_id, bp, 1000, 200, rng)
         
         if bp in red_map:
             id_sit = id_mtx_red.flatten()[np.flatnonzero(id_mtx_red)]
             id_sit_seq = id_mtx.flatten()[np.flatnonzero(id_mtx)]
             id_sit_seq_mean = np.mean(id_sit_seq)
-            # print("AA", np.mean(id_sit), np.mean(id_sit_full))
-            ax1.bar(bp, id_sit_seq_mean, color="blue")
-            ax1.bar(bp, np.mean(id_sit)-id_sit_seq_mean, bottom=id_sit_seq_mean, color="red")
+            def_sit_diff_nuc = [al - s for s, al in zip(id_sit_seq, id_sit)]
+            # deg_sites = np.mean(id_sit)-id_sit_seq_mean
+            deg_sites_mean = np.mean(def_sit_diff_nuc)
+            print("ER", np.std(id_sit_seq))
+            if gave_label:
+                ax1.bar(bp, id_sit_seq_mean, color="teal")
+                ax1.bar(bp, deg_sites_mean, bottom=id_sit_seq_mean, color="mediumaquamarine")
+                
+            else:
+                ax1.bar(bp, deg_sites_mean, bottom=id_sit_seq_mean, color="mediumaquamarine", label="diff. nucleotides")
+                ax1.bar(bp, id_sit_seq_mean, color="teal", label="ident. nucleotides")
+                gave_label = True
+
+            ax1.errorbar(bp, id_sit_seq_mean, yerr=np.std(id_sit_seq), linewidth=1, color="black", zorder=10)
+            ax1.errorbar(bp + 1/10, deg_sites_mean+id_sit_seq_mean, yerr=np.std(def_sit_diff_nuc), linewidth=1, color="black", zorder=10)
+
+            id_sites_means.append(id_sit_seq_mean)
+            deg_sites_means.append(deg_sites_mean)
         else:
             id_sit = id_mtx.flatten()[np.flatnonzero(id_mtx)]
-            ax1.bar(bp, np.mean(id_sit), color="blue")
+            id_sites = np.mean(id_sit)
+            ax1.bar(bp, id_sites, color="teal")
+            id_sites_means.append(id_sites)
+            deg_sites_means.append(0)
+            ax1.errorbar(bp, id_sites, yerr=np.std(id_sit), linewidth=1, color="black")
             
         diff_ph_p, diff_ph_n = ph_diff_prob(id_mtx, gp_map, nc_gts)
         y = list(diff_ph_p.values())
         x = list(diff_ph_p.keys())
-        ax2.plot(x[1:9], y[1:9], label=f"bp {bp}")
+        ax2.plot([x[4], x[8]], [y[4], y[8]], label=f"{bp}", marker="x", color=f"C{bp-1}")
 
-    ax1.set_xlabel("GP map", size=15)
-    ax1.set_ylabel("Average number of sites\nwith id. base-pairing partners", size=15)
+        xs.append(" ".join([str(num) for num in x]))
+        ys.append(" ".join([str(num) for num in y]))
+
+    with open("p_over_id_sites.txt", "w") as f:
+        for xstr, ystr in zip(xs, ys):
+            f.write(xstr)
+            f.write("\n")
+            f.write(ystr)
+            f.write("\n\n")
+
+    with open("id_and_deg_sites_per_gpmap.txt", "w") as f:
+        f.write(" ".join([str(num) for num in id_sites_means]))
+        f.write("\n")
+        f.write(" ".join([str(num) for num in deg_sites_means]))
+
+    ax1.set_xlabel("GP map", size=18)
+    ax1.set_ylabel("No. of sites with identical\nbase-pairing partners", size=18)
 
     ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax1.set_xticks(list(range(0, 10)))
-    p =[1, 2, 3, "canon.", 5, 6, 7, 8, 9, 10]
-    ax.set_xticklabels(p) #(list(range(1, 11)))
+    ax1.set_xticks(list(range(1, 11)))
+    p =[1, 2, 3, "can.", 5, 6, 7, 8, 9, 10]
+    ax1.set_xticklabels(p) #(list(range(1, 11)))
 
-    ax2.set_xlabel("Number of sites with\nid. base-pairing partners ", size=15)
-    ax2.set_ylabel("Probability that genotype\npair maps to different phenotypes", size=15)
+    ax2.set_xticks([5, 9], labels=["5", "9"])
 
-    for ax in (ax1, ax2)
-        ax.tick_params(axis='y', which='major', labelsize=15)
-        ax.tick_params(axis='y', which='minor', labelsize=15)
-        ax.tick_params(axis='x', which='major', labelsize=15)
-        ax.tick_params(axis='x', which='minor', labelsize=15)
+    ax2.set_xlabel("No. sites with identical\nbase-pairing partners ", size=18)
+    ax2.set_ylabel("Probability that two genotypes\nhave different phenotypes", size=18)
+
+    for ax in (ax1, ax2):
+        ax.tick_params(axis='y', which='major', labelsize=18)
+        ax.tick_params(axis='y', which='minor', labelsize=18)
+        ax.tick_params(axis='x', which='major', labelsize=18)
+        ax.tick_params(axis='x', which='minor', labelsize=18)
 
     
-    ax2.tick_params(axis='y', which='major', labelsize=15)
-    ax2.tick_params(axis='y', which='minor', labelsize=15)
-    ax2.tick_params(axis='x', which='major', labelsize=15)
-    ax2.tick_params(axis='x', which='minor', labelsize=15)
-        
+    ax2.tick_params(axis='y', which='major', labelsize=18)
+    ax2.tick_params(axis='y', which='minor', labelsize=18)
+    ax2.tick_params(axis='x', which='major', labelsize=18)
+    ax2.tick_params(axis='x', which='minor', labelsize=18)
+    
+    ax2.legend(loc="upper right", frameon=False, fancybox=False, ncol=2)
+    ax1.legend(loc="upper left", frameon=False, fancybox=False)
+
     plt.tight_layout()
     plt.savefig(args.output, format="pdf", dpi=30)
