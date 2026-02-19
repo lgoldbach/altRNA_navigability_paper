@@ -1,0 +1,31 @@
+
+configfile: "config/config.yaml"
+
+include: "rules/compute_mfe_propensities.smk"
+include: "rules/gp_mapping.smk"
+include: "rules/evo_simulations.smk"
+include: "rules/plotting.smk"
+
+
+### Rule all is set up list all the figures as targets (maybe additional files
+### if necessary)
+rule all:
+    input:
+        expand("<output>/figures/navigability_boxplot_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/figures/viennaRNA_bp{ref_bp}_comparison_pop{pop_size}.pdf", ref_bp=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/figures/navigability_over_freq_bp{canon}_bp{comp1}_bp{comp2}_pop_size{pop_size}.pdf", canon=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"], comp1=config["fig_6b"]["comp1"], comp2=config["fig_6b"]["comp2"]),
+        expand("<output>/figures/navigability_over_peak_ratio_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/figures/peak_sizes_vs_prediction{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        "<output>/figures/fig6_neigh_div_degen_relation.pdf",
+        expand("<output>/figures/navigability_over_freq_all_pop_size{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+
+
+# use the three steps below as a test of the new structure for the simpler
+# case of the viennaRNA propensity score analysis
+
+# import plotting.smk
+
+# import mfe_propensity.smk module
+
+# import rna_gp_mapping
+
