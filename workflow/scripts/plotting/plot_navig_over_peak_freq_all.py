@@ -47,26 +47,35 @@ if __name__ ==  "__main__":
                 x.append(f)
         
         c = f"C{i}"
+        
         if i == 3:   # plot canonical data in all plots as reference
             for ax_ in axes_flat:
-                ax_.scatter(np.log10(x), y, color=c, alpha=.8, s=35)
+                ax_.scatter(np.log10(x), y, color=c, alpha=.8, s=35, label="canon.")
                 ax_.vlines(np.log10(np.mean(x)), -0.01, 1.01, color=c, zorder=-10)
             id_mod = -1
+            continue
+
         
         ax = axes_flat[i+id_mod]
 
-        ax.scatter(np.log10(x), y, color=c, alpha=.8, s=35)
+        label = f"{i+1}"
+
+        ax.scatter(np.log10(x), y, color=c, alpha=.8, s=35, label=label)
         ax.vlines(np.log10(np.mean(x)), -0.01, 1.01, color=c, zorder=-10)
     # ax.scatter(np.log10([10**-1.1, 10**-1.2, 10**-1.5, 10**-1.7]), [0.9]*4)
     # ax.set_xlabel("Peak phenotype frequency (log10)", fontsize=axislabel_size)
     # ax.set_ylabel("Average navigability", fontsize=axislabel_size)
 
         ax.set_ylim(-0.01, 1.01)
-        ax.set_xlim(-4.3, -0.2)
+        # ax.set_xlim(-4.3, -0.2)
+
+        
 
         ax.tick_params(axis='both', which='major', labelsize=labelsize)
         ax.tick_params(axis='both', which='minor', labelsize=labelsize)
 
+    for ax in axes_flat:
+        ax.legend(title="GP map", frameon=False, fancybox=False, fontsize=15, title_fontsize=17)
     # ax3.legend(loc="upper left", frameon=False, fancybox=False, prop={'size': 18})
     plt.tight_layout()        
     plt.savefig(args.output, format="pdf", dpi=30)
