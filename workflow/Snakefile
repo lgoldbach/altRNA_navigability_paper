@@ -18,7 +18,9 @@ rule all:
         expand("<output>/figures/peak_sizes_vs_prediction{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
         "<output>/figures/fig6_neigh_div_degen_relation.pdf",
         expand("<output>/figures/navigability_over_freq_all_pop_size{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
-
+        expand("<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"),
+        "<output>/figures/neigh_divs_and_neigh_div_degen_correlation.pdf",
+        "<output>/figures/ph_bias_vs_num_of_ph.pdf"
 
 # use the three steps below as a test of the new structure for the simpler
 # case of the viennaRNA propensity score analysis
