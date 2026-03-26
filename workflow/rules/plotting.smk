@@ -109,6 +109,7 @@ rule plot_peak_sizes_vs_prediction:
 rule plot_neigh_div_degeneracy_relation:
     input:
         nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
+        nc_graphs=expand("<output>/gp_map_{bp}/nc_graph.pickle", bp=config["bp_rules"]),
         gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
     output:
         "<output>/figures/fig6_neigh_div_degen_relation.pdf"
@@ -116,7 +117,64 @@ rule plot_neigh_div_degeneracy_relation:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
     shell:
-        "workflow/scripts/plotting/plot_neigh_div_bp_deg_relation.py "
+        "workflow/scripts/plotting/plot_neigh_div_bp_deg_relation_NC_sample.py "
         "-g {input.gp_maps} "
+        "-c {input.nc_graphs} "
         "-n {input.nc_to_gt_files} "
+        "-o {output} "
+
+# rule prob_of_diff_ph_for_gt_pairs:
+#     input:
+#         nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
+#         gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
+#     output:
+#         "<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"
+#     resources:
+#         mem_mb_per_cpu=config["min_mem_per_cpu"],
+#         runtime=config["max_runtime"],
+#     shell:
+#         "workflow/scripts/plotting/plot_prob_of_diff_ph_for_gt_pairs.py "
+#         "-g {input.gp_maps} "
+#         "-n {input.nc_to_gt_files} "
+#         "-o {output} "
+
+rule plot_neigh_div_and_neigh_div_degen_correlation:
+    input:
+        nc_graphs=expand("<output>/gp_map_{bp}/nc_graph.pickle", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/neigh_divs_and_neigh_div_degen_correlation.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_avg_NC_neigh_div.py "
+        "-n {input.nc_graphs} "
+        "-o {output} "
+
+rule plot_ph_bias_vs_num_of_unique_ph:
+    input:
+        ph_distr=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/ph_bias_vs_num_of_ph.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_ph_bias_over_unique_phenotypes.py "
+        "-p {input.ph_distr} "
+        "-o {output} "
+
+rule plot_ph_bias_vs_nc_div_contribution:
+    input:
+        ph_distr=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+        nc_graphs=expand("<output>/gp_map_{bp}/nc_graph.pickle", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/ph_bias_vs_nc_div_contrib.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_ph_bias_vs_nc_div_contrib.py "
+        "-p {input.ph_distr} "
+        "-n {input.nc_graphs} "
         "-o {output} "

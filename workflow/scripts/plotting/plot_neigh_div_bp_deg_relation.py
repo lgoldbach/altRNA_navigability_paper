@@ -145,6 +145,7 @@ if __name__ ==  "__main__":
 
     gave_label = False
     for bp, (gp_map_f, nc_to_gt_f) in enumerate(zip(args.gp_map, args.nc_to_gt), start=1):
+        print(f"GP MAP {bp}")
         gp_map = pickle.load(open(gp_map_f, "rb"))
         nc_to_gt = get_nc_to_gt(nc_to_gt_f)
 
@@ -152,15 +153,17 @@ if __name__ ==  "__main__":
         rng.shuffle(ncs)
 
         nc_id = None
+        upper = 1000
+        lower = 100
         for nc in ncs:
-            if len(nc_to_gt[nc]) < 5500 and len(nc_to_gt[nc]) > 4500:
+            if len(nc_to_gt[nc]) < upper and len(nc_to_gt[nc]) > lower:
                 nc_id = nc
                 break
         if not nc_id:
             print("No neutral component found")
-            break
+            continue
 
-        nc_gts, id_mtx, id_mtx_red = get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_id, bp, 1000, 200, rng)
+        nc_gts, id_mtx, id_mtx_red = get_avg_identical_sites_full_and_red(gp_map, nc_to_gt, nc_id, bp, 1000, 300, rng)
         
         if bp in red_map:
             id_sit = id_mtx_red.flatten()[np.flatnonzero(id_mtx_red)]
@@ -195,8 +198,9 @@ if __name__ ==  "__main__":
         diff_ph_p, diff_ph_n = ph_diff_prob(id_mtx, gp_map, nc_gts)
         y = list(diff_ph_p.values())
         x = list(diff_ph_p.keys())
-        ax2.plot([x[4], x[8]], [y[4], y[8]], label=f"{bp}", marker="x", color=f"C{bp-1}")
-
+        # ax2.plot([x[4], x[8]], [y[4], y[8]], label=f"{bp}", marker="x", color=f"C{bp-1}")
+        ax2.plot(x, y, label=f"{bp}", marker="x", color=f"C{bp-1}")
+        print(diff_ph_n)
         xs.append(" ".join([str(num) for num in x]))
         ys.append(" ".join([str(num) for num in y]))
 
