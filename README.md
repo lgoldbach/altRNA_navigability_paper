@@ -5,7 +5,7 @@ This repository contains all the code and data needed for the modeling, simulati
 
 ### Requirements
 
-All requirements can be found in the **requirements.txt**, are compatible with **Python version 3.11** and should be installable with standard package managers. The only package you should have to **install manually** is [**rna_gpf**](https://https://github.com/lgoldbach/rna_gpf), which is contains the basic functionality for dealing with RNA secondary structure genotype-phenotype-fitness maps.
+All requirements can be found in the **requirements.txt**, are compatible with **Python version 3.11** and should be installable with standard package managers. The only package you should have to **install manually** is [rna_gpf](https://github.com/lgoldbach/rna_gpf), which is contains the basic functionality for dealing with RNA secondary structure genotype-phenotype-fitness maps.
 
 
 ### Project structure and workflow
