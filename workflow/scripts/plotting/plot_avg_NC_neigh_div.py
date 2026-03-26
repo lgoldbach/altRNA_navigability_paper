@@ -37,6 +37,9 @@ if __name__ ==  "__main__":
         
         neigh_divs_mean = np.mean(neigh_divs)
         neigh_divs_std = np.std(neigh_divs)
+        # q1 = np.percentile(neigh_divs, q=25)
+        # q3 = np.percentile(neigh_divs, q=75)
+        
         ax1.bar(bp, neigh_divs_mean, yerr=neigh_divs_std, color="grey")
 
         ax2.scatter(degen[bp], neigh_divs_mean, color=f"C{bp-1}", label=bp)

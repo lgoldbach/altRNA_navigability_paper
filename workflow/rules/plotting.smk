@@ -163,3 +163,18 @@ rule plot_ph_bias_vs_num_of_unique_ph:
         "workflow/scripts/plotting/plot_ph_bias_over_unique_phenotypes.py "
         "-p {input.ph_distr} "
         "-o {output} "
+
+rule plot_ph_bias_vs_nc_div_contribution:
+    input:
+        ph_distr=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+        nc_graphs=expand("<output>/gp_map_{bp}/nc_graph.pickle", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/ph_bias_vs_nc_div_contrib.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_ph_bias_vs_nc_div_contrib.py "
+        "-p {input.ph_distr} "
+        "-n {input.nc_graphs} "
+        "-o {output} "

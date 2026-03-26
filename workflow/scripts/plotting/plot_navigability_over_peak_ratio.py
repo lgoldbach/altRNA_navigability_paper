@@ -41,7 +41,8 @@ if __name__ ==  "__main__":
         for glo_peak_ph, navig, all_peaks in zip(ph_n, navigs_per_fl, peaks_per_fl):
             peak_ratio = ph_to_counts[glo_peak_ph] / all_peaks  # global peaks / all peaks
             peak_ratios_per_fl.append(peak_ratio)
-            local_peak_frac_per_fl.append((all_peaks - ph_to_counts[glo_peak_ph]) / folded_count)
+            # local_peak_frac_per_fl.append((all_peaks - ph_to_counts[glo_peak_ph]) / folded_count)
+            local_peak_frac_per_fl.append((all_peaks - ph_to_counts[glo_peak_ph]) / 4**12)
             
         ax1.scatter(peak_ratios_per_fl, navigs_per_fl, color=f"C{i-1}", alpha=0.5, s=7, linewidths=0)
 
