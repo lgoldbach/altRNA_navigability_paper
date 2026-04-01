@@ -34,7 +34,7 @@ rule make_permissible_sets:
     input:
         "<output>/alt_genotypes.txt"
     output:
-        "workflow/scripts/gp_map_{bp}/permissible_sets.txt"  # regex to constrain to numbers and prevent matching subdirectory gp_map.txt
+        "<output>/gp_map_{bp}/permissible_sets.txt"  # regex to constrain to numbers and prevent matching subdirectory gp_map.txt
     params:
         graph_path=config["bp_rule_graphs"],
         min_loop_size=config["folding_params"]["min_loop"],
