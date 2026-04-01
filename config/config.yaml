@@ -14,7 +14,7 @@ viennaRNA:
 mfe_prop_ref_gp_map:  
   "viennaRNA"
 
-alt_alphabet: JKLM
+alt_alphabet: "JKLM"
 
 folding_params:
   min_loop: 3  # minimum size of loops

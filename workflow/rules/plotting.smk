@@ -1,4 +1,36 @@
 
+# Suppl. Figure 1A,B
+rule plot_consensus_matrix_propensity_histogram:
+    input:
+        matrix="<output>/gp_map_viennaRNA/mfe_prop/pairwise_consensus_matrix.pickle",
+        phenotypes="<output>/gp_map_viennaRNA/phenotypes.txt"
+    output:
+        "<output>/figures/consensus_matrix_plot.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/compute_mfe_propensities/plot_consensus_matrix.py "
+        "-i {input.matrix} "
+        "-p {input.phenotypes} "
+        "-o {output} "
+
+
+# Suppl. Figure 2
+rule plot_secondary_structure_properties:
+    input:
+        "<resources>/phenotype_probs.csv",
+    output:
+        "secondary_structure_props_vs_mfe_score.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_secondary_structure_properties.py "
+        "-i {input} "
+        "-o {output} "
+
+
 rule plot_boxplots_navigability:
     input:
         expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}.txt", bp=config["bp_rules"])
