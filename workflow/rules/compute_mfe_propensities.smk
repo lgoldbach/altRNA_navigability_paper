@@ -1,5 +1,4 @@
 
-script_dir = ""
 
 rule preprocess_suboptimal_map:
     input: 

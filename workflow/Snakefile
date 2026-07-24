@@ -11,8 +11,17 @@ include: "rules/plotting.smk"
 ### if necessary)
 rule all:
     input:
+        expand("<output>/figures/navigability_boxplot_pop{pop_size}_nc_unfolded_{n_unfolded}.pdf", n_unfolded=config["folding_params"]["n_unfolded"], pop_size=config["evo_sim_params"]["pop_size"]),
+        # expand("<output>/gp_map_{bp}/unfolded_genotypes_nc_sample_n_unf{n_unfolded}.txt", bp=config["bp_rules"], n_unfolded=config["folding_params"]["n_unfolded"])
+        # expand("<output>/figures/navigability_boxplot_pop{pop_size}_ref_unfolded.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        # expand("<output>/figures/navigability_boxplot_pop{pop_size}_unfolded{n_unfolded}.pdf", pop_size=config["evo_sim_params"]["pop_size"], n_unfolded=config["folding_params"]["n_unfolded"]),
+        # expand("<output>/gp_map_{bp}/nc_graph_no_added_unfolded.pickle", bp=config["bp_rules"])
+        # expand("<output>/gp_map_{bp}/gp_map_unfolded{n_unfolded}.txt", n_unfolded=8388608, bp=config["bp_rules"]), # n_unfolded=config["folding_params"]["n_unfolded"]),
+        # expand("<output>/gp_map_{bp}/gp_map_ref_unfolded.pickle", bp=config["bp_rules"])
+        # expand("<output>/gp_map_{bp}/correlated_fitness_landscapes/cparam_{cparam}/fl_{fl_id}/fl.txt", fl_id=range(config["fl_params"]["N"]), bp=config["bp_rules"], cparam=config["correlations_params"]),  
+        # expand("<output>/figures/navigability_boxplot_pop{pop_size}_corr{cparam}.pdf", pop_size=config["evo_sim_params"]["pop_size"], cparam=config["correlations_params"]),
         #figure 1b
-        "<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
+        # "<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
         # expand("<output>/figures/navigability_boxplot_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
         # expand("<output>/figures/viennaRNA_bp{ref_bp}_comparison_pop{pop_size}.pdf", ref_bp=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"]),
         # expand("<output>/figures/navigability_over_freq_bp{canon}_bp{comp1}_bp{comp2}_pop_size{pop_size}.pdf", canon=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"], comp1=config["fig_6b"]["comp1"], comp2=config["fig_6b"]["comp2"]),

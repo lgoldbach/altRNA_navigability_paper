@@ -60,6 +60,7 @@ if __name__ ==  "__main__":
     print("fix prob done complete", flush=True)
     T = pairwise_transition_prob_dict(f_map=ph_to_fitness, func=fix_prob)
 
+    print(ph_to_fitness)
     print("Transition matrix complete", flush=True)
     all_nodes = set(G.genotypes)
     print("Genotype sets complete", flush=True)

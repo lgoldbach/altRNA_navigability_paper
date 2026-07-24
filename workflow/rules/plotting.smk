@@ -30,15 +30,74 @@ rule plot_secondary_structure_properties:
         "-i {input} "
         "-o {output} "
 
-
 rule plot_boxplots_navigability:
     input:
         expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}.txt", bp=config["bp_rules"])
     output:
         "<output>/figures/navigability_boxplot_pop{pop_size}.pdf"
+    wildcard_constraints:
+         pop_size='[0-9]*'
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_corr:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_corr{{cparam}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_corr{cparam}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_ref_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_ref_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_ref_unfolded.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_random_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_unfolded{{n_unfolded}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_unfolded{n_unfolded}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*',
+        bp='[0-9]*'
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_nc_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_nc_unfolded_{{n_unfolded}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_nc_unfolded_{n_unfolded}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*',
+        bp='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navigability_boxplots.py "
         "-n {input} "

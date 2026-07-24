@@ -20,6 +20,12 @@ folding_params:
   min_loop: 3  # minimum size of loops
   hbonds_below_max: 3  # include structures with up to 3 hydrogen bonds below the max in the permissible set
   permis_set_max: 10000  # maximum number of structures per permissble set
+  unfolded: ............
+  n_unfolded:   # number of unfolded genotypes
+    - 14622554  # ~87%
+    # - 8388608   # 50% 
+    # - 3355443   # 20%
+  nc_size_cutoff: 100
 
 bp_rules:
   - "01"
@@ -43,10 +49,18 @@ fl_params:
   min_f: 0
   max_f: 1
 
+corr_fl_params:
+  N: 200
+
 evo_sim_params:
   pop_size: 1000000  # population size
   sample_size: 1000  # number of simulations per fitness landscape
   max_steps: 1000
+
+correlations_params:
+  - 0
+  - .5
+  - 1
 
 # the resources below are exessive for most rules but
 # adapting resources too much would often cause errors on our cluster and
