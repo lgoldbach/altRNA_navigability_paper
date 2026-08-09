@@ -55,6 +55,12 @@ if __name__ ==  "__main__":
             if fitness > max_fit:
                 max_fit = fitness
                 print("X", max_fit, phenotype, flush=True)
+
+    # give phenotypes that do not occur in fl a fitness of 0
+    for ph in phenotypes:
+        if ph not in ph_to_fitness:
+            ph_to_fitness[ph] = 0.000000001
+
     print("f loop complete", flush=True)
     fix_prob = lambda x, y: kimura_fixation_from_fitness(x, y, N=args.population_size)
     print("fix prob done complete", flush=True)

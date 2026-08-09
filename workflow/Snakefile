@@ -11,7 +11,20 @@ include: "rules/plotting.smk"
 ### if necessary)
 rule all:
     input:
-        expand("<output>/figures/navigability_boxplot_pop{pop_size}_nc_unfolded_{n_unfolded}.pdf", n_unfolded=config["folding_params"]["n_unfolded"], pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/gp_map_04/navigability_per_fl_pop{pop_size}_vienna_RNA_gp_map.txt", pop_size=config["evo_sim_params"]["pop_size"]),
+        "<output>/gp_map_04/f1_score_ph_based_unfolded.txt",
+        "<output>/gp_map_viennaRNA/phenotype_mfes.txt",
+        "<output>/gp_map_viennaRNA/per_ph_match_and_unfolded_counts.json",
+        expand("<output>/gp_map_{bp}/phenotype_distribution_{alt}.txt", alt=["no_added_unfolded"], bp=config["bp_rules"]),
+        expand("<output>/gp_map_{bp}/phenotype_distribution_{alt}.txt", alt=["diffu_unfolded", "unfolded8388608", "unfolded3355443"], bp=config["bp_rules"]),
+        expand("<output>/gp_map_{bp}/neutral_component_sizes_{alt}.txt", alt=["diffu_unfolded", "unfolded8388608", "unfolded3355443"], bp=config["bp_rules"]),
+        expand("<output>/gp_map_{bp}/neutral_component_sizes.txt", bp=config["bp_rules"]),
+        # expand("<output>/gp_map_{bp}/phenotype_distribution_ph_based_unfolded.txt", bp=config["bp_rules"]),
+        # expand("<output>/gp_map_{bp}/neutral_component_sizes_ph_based_unfolded.txt", bp=config["bp_rules"]),
+        expand("<output>/figures/navigability_boxplot_pop{pop_size}_diffu_unfolded_iter14_alpha09_seed1996.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{pop_size}_diffu_unfolded.txt", pop_size=config["evo_sim_params"]["pop_size"], bp=config["bp_rules"]),
+        # expand("<output>/figures/navigability_boxplot_pop{pop_size}_nc_unfolded_{n_unfolded}.pdf", n_unfolded=config["folding_params"]["n_unfolded"], pop_size=config["evo_sim_params"]["pop_size"]),
+        # expand("<output>/figures/navigability_over_freq_all_pop_size{pop_size}_diffu_unfolded_iter14_alpha09_seed1996.pdf", pop_size=config["evo_sim_params"]["pop_size"], alt="ph_based_unfolded"),
         # expand("<output>/gp_map_{bp}/unfolded_genotypes_nc_sample_n_unf{n_unfolded}.txt", bp=config["bp_rules"], n_unfolded=config["folding_params"]["n_unfolded"])
         # expand("<output>/figures/navigability_boxplot_pop{pop_size}_ref_unfolded.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
         # expand("<output>/figures/navigability_boxplot_pop{pop_size}_unfolded{n_unfolded}.pdf", pop_size=config["evo_sim_params"]["pop_size"], n_unfolded=config["folding_params"]["n_unfolded"]),

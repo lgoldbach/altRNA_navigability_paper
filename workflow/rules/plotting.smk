@@ -71,6 +71,32 @@ rule plot_boxplots_navigability_ref_unfolded:
         "-n {input} "
         "-o {output} "
 
+rule plot_boxplots_navigability_diffu_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_diffu_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_diffu_unfolded_iter14_alpha09_seed1996_frac50.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_ph_based_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_ph_based_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_ph_based_unfolded.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
 rule plot_boxplots_navigability_random_unfolded:
     input:
         expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_unfolded{{n_unfolded}}.txt", bp=config["bp_rules"])
@@ -158,12 +184,35 @@ rule plot_navig_over_peak_freq_all:
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navig_over_peak_freq_all.py "
         "-p {input.ph_dists} "
         "-n {input.navigs} "
         "-i {params.ignore} "
         "-o {output} "
+
+rule plot_navig_over_peak_freq_all_alt:
+    input:
+        ph_dists=expand("<output>/gp_map_{bp}/phenotype_distribution_{{alt}}.txt", bp=config["bp_rules"]),
+        navigs=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_{{alt}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_over_freq_all_pop_size{pop_size}_{alt}.pdf"
+    params:
+        ignore=config["unfolded"]
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
+    shell:
+        "workflow/scripts/plotting/plot_navig_over_peak_freq_all.py "
+        "-p {input.ph_dists} "
+        "-n {input.navigs} "
+        "-i {params.ignore} "
+        "-o {output} "
+
 
 rule plot_navigability_over_peak_ratio:
     input:
