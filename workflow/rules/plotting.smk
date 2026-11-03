@@ -30,15 +30,100 @@ rule plot_secondary_structure_properties:
         "-i {input} "
         "-o {output} "
 
-
 rule plot_boxplots_navigability:
     input:
         expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}.txt", bp=config["bp_rules"])
     output:
         "<output>/figures/navigability_boxplot_pop{pop_size}.pdf"
+    wildcard_constraints:
+         pop_size='[0-9]*'
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_corr:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_corr{{cparam}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_corr{cparam}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_ref_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_ref_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_ref_unfolded.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_diffu_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_diffu_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_diffu_unfolded_iter14_alpha09_seed1996_frac50.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_ph_based_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_ph_based_unfolded.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_ph_based_unfolded.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_random_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_unfolded{{n_unfolded}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_unfolded{n_unfolded}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*',
+        bp='[0-9]*'
+    shell:
+        "workflow/scripts/plotting/plot_navigability_boxplots.py "
+        "-n {input} "
+        "-o {output} "
+
+rule plot_boxplots_navigability_nc_unfolded:
+    input:
+        expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_nc_unfolded_{{n_unfolded}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_boxplot_pop{pop_size}_nc_unfolded_{n_unfolded}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*',
+        bp='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navigability_boxplots.py "
         "-n {input} "
@@ -99,12 +184,35 @@ rule plot_navig_over_peak_freq_all:
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navig_over_peak_freq_all.py "
         "-p {input.ph_dists} "
         "-n {input.navigs} "
         "-i {params.ignore} "
         "-o {output} "
+
+rule plot_navig_over_peak_freq_all_alt:
+    input:
+        ph_dists=expand("<output>/gp_map_{bp}/phenotype_distribution_{{alt}}.txt", bp=config["bp_rules"]),
+        navigs=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_{{alt}}.txt", bp=config["bp_rules"])
+    output:
+        "<output>/figures/navigability_over_freq_all_pop_size{pop_size}_{alt}.pdf"
+    params:
+        ignore=config["unfolded"]
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
+    shell:
+        "workflow/scripts/plotting/plot_navig_over_peak_freq_all.py "
+        "-p {input.ph_dists} "
+        "-n {input.navigs} "
+        "-i {params.ignore} "
+        "-o {output} "
+
 
 rule plot_navigability_over_peak_ratio:
     input:
@@ -113,9 +221,30 @@ rule plot_navigability_over_peak_ratio:
         per_fl_combined_peak_size=expand("<output>/gp_map_{bp}/combined_peak_sizes_per_fl.txt", bp=config["bp_rules"]),
     output:
         "<output>/figures/navigability_over_peak_ratio_pop{pop_size}.pdf"
+    wildcard_constraints:
+        pop_size='[0-9]*'
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_over_peak_ratio.py "
+        "-n {input.per_fl_navigability} "
+        "-f {input.phenotype_distribution} "
+        "-p {input.per_fl_combined_peak_size} "
+        "-o {output} "
+
+rule plot_navigability_over_peak_ratio_alt:
+    input:
+        per_fl_navigability=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_{{alt}}.txt", bp=config["bp_rules"]),
+        phenotype_distribution=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+        per_fl_combined_peak_size=expand("<output>/gp_map_{bp}/combined_peak_sizes_per_fl_{{alt}}.txt", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/navigability_over_peak_ratio_pop{pop_size}_{alt}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navigability_over_peak_ratio.py "
         "-n {input.per_fl_navigability} "
@@ -155,20 +284,20 @@ rule plot_neigh_div_degeneracy_relation:
         "-n {input.nc_to_gt_files} "
         "-o {output} "
 
-# rule prob_of_diff_ph_for_gt_pairs:
-#     input:
-#         nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
-#         gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
-#     output:
-#         "<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"
-#     resources:
-#         mem_mb_per_cpu=config["min_mem_per_cpu"],
-#         runtime=config["max_runtime"],
-#     shell:
-#         "workflow/scripts/plotting/plot_prob_of_diff_ph_for_gt_pairs.py "
-#         "-g {input.gp_maps} "
-#         "-n {input.nc_to_gt_files} "
-#         "-o {output} "
+rule prob_of_diff_ph_for_gt_pairs:
+    input:
+        nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
+        gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
+    output:
+        "<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_prob_of_diff_ph_for_gt_pairs.py "
+        "-g {input.gp_maps} "
+        "-n {input.nc_to_gt_files} "
+        "-o {output} "
 
 rule plot_neigh_div_and_neigh_div_degen_correlation:
     input:

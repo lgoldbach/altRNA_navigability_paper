@@ -1,6 +1,3 @@
-
-script_dir = ""
-
 rule preprocess_suboptimal_map:
     input: 
         permissible_sets="<output>/gp_map_" + config["canonical_rule"] + "/permissible_sets.txt",
@@ -56,24 +53,3 @@ rule compute_mfe_propensities:
         "-i {input.matrix} "
         "-p {input.phenotypes} "
         "-o {output} "
-
-
-# rule consenus_matrix_statistics:
-#     input:
-#         "pairwise_consensus_matrix.pickle"
-#     output:
-#         "consistency_matrix_stats.pdf"
-#     shell:
-#         "plot_consensus_matrix_stats.py "
-#         "-i {input} "
-#         "-o {output} "
-
-# rule binarize_consensus_matrix:
-#     input:
-#         "pairwise_consensus_matrix.pickle"
-#     output:
-#         "binary_pairwise_consensus_matrix.pickle"
-#     shell:
-#         "binarize_consensus_matrix.py "
-#         "-i {input} "
-#         "-o {output} "

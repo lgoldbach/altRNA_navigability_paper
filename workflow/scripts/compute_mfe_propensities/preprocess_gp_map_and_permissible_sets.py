@@ -26,11 +26,7 @@ if __name__ ==  "__main__":
     args = parser.parse_args()    
 
 
-translation = {"J": "G", "K": "A", "L": "C", "M": "U"}
-
-
 # map nussinov to AUGC
-# translation = {"L": "A", "J": "U", "M": "G", "K": "C"}
 translation = {"J": "G", "K": "A", "L": "C", "M": "U"}
 
 D = gpmap_pgdict(gpmap_file=args.input, genotype_file=args.genotypes)

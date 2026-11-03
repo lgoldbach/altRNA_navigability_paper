@@ -7,30 +7,10 @@ include: "rules/evo_simulations.smk"
 include: "rules/plotting.smk"
 
 
-### Rule all is set up list all the figures as targets (maybe additional files
-### if necessary)
+### Simple rule all for creating all 10 GP maps using the sequence-free method
+### and using the reference ViennaRNA GP map
 rule all:
     input:
-        #figure 1b
-        "<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
-        # expand("<output>/figures/navigability_boxplot_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
-        # expand("<output>/figures/viennaRNA_bp{ref_bp}_comparison_pop{pop_size}.pdf", ref_bp=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"]),
-        # expand("<output>/figures/navigability_over_freq_bp{canon}_bp{comp1}_bp{comp2}_pop_size{pop_size}.pdf", canon=config["canonical_rule"], pop_size=config["evo_sim_params"]["pop_size"], comp1=config["fig_6b"]["comp1"], comp2=config["fig_6b"]["comp2"]),
-        # expand("<output>/figures/navigability_over_peak_ratio_pop{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
-        # expand("<output>/figures/peak_sizes_vs_prediction{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
-        # "<output>/figures/fig6_neigh_div_degen_relation.pdf",
-        # expand("<output>/figures/navigability_over_freq_all_pop_size{pop_size}.pdf", pop_size=config["evo_sim_params"]["pop_size"]),
-        # expand("<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"),
-        # "<output>/figures/neigh_divs_and_neigh_div_degen_correlation.pdf",
-        # "<output>/figures/ph_bias_vs_num_of_ph.pdf",
-        # "<output>/figures/ph_bias_vs_nc_div_contrib.pdf"
-
-# use the three steps below as a test of the new structure for the simpler
-# case of the viennaRNA propensity score analysis
-
-# import plotting.smk
-
-# import mfe_propensity.smk module
-
-# import rna_gp_mapping
+        expand("<output>/gp_map_{bp}/gp_map_unfolded{n_unfolded}.txt", n_unfolded=8388608, bp=config["bp_rules"]), # n_unfolded=config["folding_params"]["n_unfolded"]),
+        "<output>/gp_map_viennaRNA/gp_map.txt"
 
