@@ -1,4 +1,5 @@
-# Code for "The promiscuity and degeneracy of ten unique RNA base-pairing rules can determine the success of adaptive RNA evolution" by Goldbach, Martinm, Wagner 2026 (doi.org/10.1371/journal.pcbi.1014914).
+## Code for "The promiscuity and degeneracy of ten unique RNA base-pairing rules can determine the success of adaptive RNA evolution" 
+### Goldbach, Martin, Wagner 2026 (doi.org/10.1371/journal.pcbi.1014914).
 
 This repository contains all the code and data needed for the modeling, simulations and data analysis performed in the paper.
 
