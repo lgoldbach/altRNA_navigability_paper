@@ -73,24 +73,6 @@ rule extract_phenotype_list:
             for ph in gpm.phenotype_set:
                 f.write(ph + "\n")
 
-rule extract_phenotype_list_ref_unfolded:
-    input:
-        "<output>/gp_map_{bp}/gp_map_ref_unfolded.pickle"
-    output:
-        "<output>/gp_map_{bp}/phenotypes_ref_unfolded.txt"
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    wildcard_constraints:
-        bp='[0-9]*'
-    run:
-        import pickle
-
-        gpm = pickle.load(open(str(input), "rb"))
-        with open(str(output), "w") as f:
-            for ph in gpm.phenotype_set:
-                f.write(ph + "\n")
-
 rule extract_phenotype_list_random_unfolded:
     input:
         "<output>/gp_map_{bp}/gp_map_unfolded{n_unfolded}.pickle"
@@ -109,23 +91,6 @@ rule extract_phenotype_list_random_unfolded:
             for ph in gpm.phenotype_set:
                 f.write(ph + "\n")        
 
-rule extract_phenotype_list_nc_unfolded:
-    input:
-        "<output>/gp_map_{bp}/gp_map_nc_unfolded_n_unf{n_unfolded}.pickle",
-    output:
-        "<output>/gp_map_{bp}/phenotypes_nc_unfolded_n_unf{n_unfolded}.txt",
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    run:
-        import pickle
-
-        gpm = pickle.load(open(str(input), "rb"))
-        with open(str(output), "w") as f:
-            for ph in gpm.phenotype_set:
-                f.write(ph + "\n")   
-
-
 rule extract_phenotype_list_diffu_unfolded:
     input:
         "<output>/gp_map_{bp}/gp_map_diffu_unfolded.pickle",
@@ -141,24 +106,6 @@ rule extract_phenotype_list_diffu_unfolded:
         with open(str(output), "w") as f:
             for ph in gpm.phenotype_set:
                 f.write(ph + "\n")   
-
-
-rule extract_phenotype_list_ph_based_unfolded:
-    input:
-        "<output>/gp_map_{bp}/gp_map_ph_based_unfolded.pickle",
-    output:
-        "<output>/gp_map_{bp}/phenotypes_ph_based_unfolded.txt",
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    run:
-        import pickle
-
-        gpm = pickle.load(open(str(input), "rb"))
-        with open(str(output), "w") as f:
-            for ph in gpm.phenotype_set:
-                f.write(ph + "\n")   
-
 
 rule pick_random_unfolded_genotypes:
     output:
@@ -177,7 +124,6 @@ rule pick_random_unfolded_genotypes:
         with open(output[0], "w") as f:
             for g in rand_g:
                 f.write(str(g) + "\n")
-
 
 rule flatten_gp_map_nc_cutoff_random_unfolded:
     input:
@@ -205,59 +151,6 @@ rule flatten_gp_map_nc_cutoff_random_unfolded:
         "-a {params.alphabet} "
         "-o {output} "
 
-rule flatten_gp_map_nc_cutoff_ref_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/permissible_sets.txt",
-        genotypes="<output>/alt_genotypes.txt",
-        ranking="<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
-        unfolded_genotypes="<output>/ref_unfolded_genotypes.txt",
-    output:
-        "<output>/gp_map_{bp}/gp_map_ref_unfolded.txt"
-    params:
-        nc_size_cutoff=config["folding_params"]["nc_size_cutoff"],
-        unfolded=config["folding_params"]["unfolded"],
-        alphabet=config["alt_alphabet"]
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/flatten_gp_map_nc_cutoff.py "
-        "-i {input.gp_map} "
-        "-r {input.ranking} "
-        "-g {input.unfolded_genotypes} "
-        "-t {input.genotypes} "
-        "-c {params.nc_size_cutoff} "
-        "-u {params.unfolded} "
-        "-a {params.alphabet} "
-        "-o {output} "
-
-rule flatten_gp_map_nc_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/permissible_sets.txt",
-        genotypes="<output>/alt_genotypes.txt",
-        ranking="<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
-        unfolded_genotypes="<output>/gp_map_{bp}/unfolded_genotypes_indic_nc_sample_n_unf{n_unfolded}.txt"
-    output:
-        "<output>/gp_map_{bp}/gp_map_nc_unfolded_n_unf{n_unfolded}.txt"
-    params:
-        nc_size_cutoff=config["folding_params"]["nc_size_cutoff"],
-        unfolded=config["folding_params"]["unfolded"],
-        alphabet=config["alt_alphabet"]
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/flatten_gp_map_nc_cutoff.py "
-        "-i {input.gp_map} "
-        "-r {input.ranking} "
-        "-g {input.unfolded_genotypes} "
-        "-t {input.genotypes} "
-        "-c {params.nc_size_cutoff} "
-        "-u {params.unfolded} "
-        "-a {params.alphabet} "
-        "-o {output} "
-
-
 rule flatten_gp_map_nc_cutoff_diffusion_unfolded:
     input:
         gp_map="<output>/gp_map_{bp}/permissible_sets.txt",
@@ -284,48 +177,6 @@ rule flatten_gp_map_nc_cutoff_diffusion_unfolded:
         "-a {params.alphabet} "
         "-o {output} "
 
-
-rule build_gpmap_python_object_nc_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/gp_map_nc_unfolded_n_unf{n_unfolded}.txt",
-        genotypes="<output>/alt_genotypes.txt"
-    output:
-        "<output>/gp_map_{bp}/gp_map_nc_unfolded_n_unf{n_unfolded}.pickle",
-    params:
-        alphabet=config["alt_alphabet"],
-        ignore_phenotype=config["unfolded"]  # ignore unviable phenotype
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/build_gpmap_pickle.py "
-        "-f {input.gp_map} "
-        "-g {input.genotypes} "
-        "-a {params.alphabet} "
-        "-i {params.ignore_phenotype} "
-        "-o {output}"
-
-
-rule build_gpmap_python_object_ref_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/gp_map_ref_unfolded.txt",
-        genotypes="<output>/alt_genotypes.txt"
-    output:
-        "<output>/gp_map_{bp}/gp_map_ref_unfolded.pickle",
-    params:
-        alphabet=config["alt_alphabet"],
-        ignore_phenotype=config["unfolded"]  # ignore unviable phenotype
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/build_gpmap_pickle.py "
-        "-f {input.gp_map} "
-        "-g {input.genotypes} "
-        "-a {params.alphabet} "
-        "-i {params.ignore_phenotype} "
-        "-o {output}"
-
 rule build_gpmap_python_object_diffu_unfolded:
     input:
         gp_map="<output>/gp_map_{bp}/gp_map_diffu_unfolded.txt",
@@ -346,55 +197,6 @@ rule build_gpmap_python_object_diffu_unfolded:
         "-i {params.ignore_phenotype} "
         "-o {output}"
 
-rule flatten_gp_map_no_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/permissible_sets.txt",
-        genotypes="<output>/alt_genotypes.txt",
-        ranking="<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
-    output:
-        "<output>/gp_map_{bp}/gp_map_no_added_unfolded.txt"
-    params:
-        alphabet=config["alt_alphabet"],
-        unfolded=config["folding_params"]["unfolded"],
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/flatten_gp_map_no_added_unfolded.py "
-        "-i {input.gp_map} "
-        "-r {input.ranking} "
-        "-t {input.genotypes} "
-        "-u {params.unfolded} "
-        "-a {params.alphabet} "
-        "-o {output} "
-
-
-rule flatten_gp_map_ph_based_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/permissible_sets.txt",
-        genotypes="<output>/alt_genotypes.txt",
-        ranking="<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/mfe_propensities.csv",
-        ph_unf_prob="<output>/gp_map_" + config["mfe_prop_ref_gp_map"] + "/per_ph_unf_probs.txt",
-    output:
-        "<output>/gp_map_{bp}/gp_map_ph_based_unfolded.txt"
-    params:
-        nc_size_cutoff=config["folding_params"]["nc_size_cutoff"],
-        alphabet=config["alt_alphabet"],
-        unfolded=config["folding_params"]["unfolded"],
-    resources:
-        mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/flatten_gp_map_ph_based_unfolded.py "
-        "-i {input.gp_map} "
-        "-r {input.ranking} "
-        "-t {input.genotypes} "
-        "-p {input.ph_unf_prob} "
-        "-c {params.nc_size_cutoff} "
-        "-u {params.unfolded} "
-        "-a {params.alphabet} "
-        "-o {output} "
-
 
 rule build_gpmap_python_object_random_unfolded:
     input:
@@ -407,46 +209,6 @@ rule build_gpmap_python_object_random_unfolded:
         ignore_phenotype=config["unfolded"]  # ignore unviable phenotype
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/build_gpmap_pickle.py "
-        "-f {input.gp_map} "
-        "-g {input.genotypes} "
-        "-a {params.alphabet} "
-        "-i {params.ignore_phenotype} "
-        "-o {output}"
-
-rule build_gpmap_python_object_no_added_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/gp_map_no_added_unfolded.txt",
-        genotypes="<output>/alt_genotypes.txt"
-    output:
-        "<output>/gp_map_{bp}/gp_map_no_added_unfolded.pickle"
-    params:
-        alphabet=config["alt_alphabet"],
-        ignore_phenotype=None  # ignore unviable phenotype
-    resources:
-        mem_mb_per_cpu=60000,
-        runtime=config["max_runtime"],
-    shell:
-        "workflow/scripts/gp_mapping/build_gpmap_pickle.py "
-        "-f {input.gp_map} "
-        "-g {input.genotypes} "
-        "-a {params.alphabet} "
-        "-i {params.ignore_phenotype} "
-        "-o {output}"
-
-rule build_gpmap_python_object_ph_based_unfolded:
-    input:
-        gp_map="<output>/gp_map_{bp}/gp_map_ph_based_unfolded.txt",
-        genotypes="<output>/alt_genotypes.txt"
-    output:
-        "<output>/gp_map_{bp}/gp_map_ph_based_unfolded.pickle"
-    params:
-        alphabet=config["alt_alphabet"],
-        ignore_phenotype=None  # ignore unviable phenotype
-    resources:
-        mem_mb_per_cpu=60000,
         runtime=config["max_runtime"],
     shell:
         "workflow/scripts/gp_mapping/build_gpmap_pickle.py "
@@ -532,43 +294,6 @@ rule build_nc_graph_alt:
         "-g {output.nc_graph} "
         "-m {output.nc_to_genotype} "
 
-
-# rule build_nc_graph_no_added_unfolded:
-#     input:
-#         "<output>/gp_map_{bp}/gp_map_no_added_unfolded.pickle"
-#     output:
-#         nc_graph="<output>/gp_map_{bp}/nc_graph_no_added_unfolded.pickle",
-#         nc_to_genotype="<output>/gp_map_{bp}/nc_to_gt_no_added_unfolded.txt",
-#     params:
-#         ignore=None
-#     resources:
-#         mem_mb_per_cpu=60000,
-#         runtime=config["max_runtime"],
-#     shell:
-#         "workflow/scripts/gp_mapping/nc_graph.py "
-#         "-f {input} "
-#         "-i {params.ignore} "
-#         "-g {output.nc_graph} "
-#         "-m {output.nc_to_genotype} "
-
-# rule build_nc_graph_ph_based_unfolded:
-#     input:
-#         "<output>/gp_map_{bp}/gp_map_ph_based_unfolded.pickle"
-#     output:
-#         nc_graph="<output>/gp_map_{bp}/nc_graph_ph_based_unfolded.pickle",
-#         nc_to_genotype="<output>/gp_map_{bp}/nc_graph_ph_based_unfolded.txt",
-#     params:
-#         ignore=None
-#     resources:
-#         mem_mb_per_cpu=60000,
-#         runtime=config["max_runtime"],
-#     shell:
-#         "workflow/scripts/gp_mapping/nc_graph.py "
-#         "-f {input} "
-#         "-i {params.ignore} "
-#         "-g {output.nc_graph} "
-#         "-m {output.nc_to_genotype} "
-
 rule nc_graph_to_nc_sizes_txt:
     input:
         "<output>/gp_map_{bp}/nc_graph.pickle"
@@ -584,22 +309,6 @@ rule nc_graph_to_nc_sizes_txt:
         with open(output[0], "w") as f:
             for node in nc_graph:
                 f.write(f"{str(node)} {str(nc_graph.nodes[node]['size'])}\n")   
-
-# rule nc_graph_to_nc_sizes_txt_ph_based_unf:
-#     input:
-#         "<output>/gp_map_{bp}/nc_graph_ph_based_unfolded.pickle"
-#     output:
-#         "<output>/gp_map_{bp}/neutral_component_sizes_ph_based_unfolded.txt"
-#     resources:
-#         mem_mb_per_cpu=config["min_mem_per_cpu"],
-#         runtime=config["max_runtime"],
-#     run:
-#         import pickle
-#         # load nc graph and write nc sizes into a txt file
-#         nc_graph = pickle.load(open(input[0], "rb"))
-#         with open(output[0], "w") as f:
-#             for node in nc_graph:
-#                 f.write(f"{str(node)} {str(nc_graph.nodes[node]['size'])}\n")   
 
 
 rule nc_graph_to_nc_sizes_txt_alt:
@@ -681,7 +390,6 @@ rule estimate_unfolded_prob:
         "-g {input.genotypes} "
         "-u {params.unfolded} "
         "-o {output} "
-
 
 rule compute_f1:
     input:

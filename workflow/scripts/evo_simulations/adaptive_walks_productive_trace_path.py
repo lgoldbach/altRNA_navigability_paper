@@ -57,9 +57,11 @@ if __name__ ==  "__main__":
                 print("X", max_fit, phenotype, flush=True)
 
     # give phenotypes that do not occur in fl a fitness of 0
+    non_existent_ph = []
     for ph in phenotypes:
         if ph not in ph_to_fitness:
-            ph_to_fitness[ph] = 0.000000001
+            ph_to_fitness[ph] = 0.0
+            non_existent_ph.append(ph)
 
     print("f loop complete", flush=True)
     fix_prob = lambda x, y: kimura_fixation_from_fitness(x, y, N=args.population_size)
@@ -73,7 +75,7 @@ if __name__ ==  "__main__":
     # phenotypes to avoid as starting nodes, e.g. lethal ones.
     if args.avoid:
         # get all lethal nodes
-        lethal_nodes = [g for i, g in enumerate(G.genotypes) if G.phenotypes[i]==args.avoid]
+        lethal_nodes = [g for i, g in enumerate(G.genotypes) if G.phenotypes[i]==args.avoid or G.map(g) in non_existent_ph]
 
     # extract nodes that are not target (or lethal if applicable)
     potential_starting_nodes = list(all_nodes.difference(set(lethal_nodes)))

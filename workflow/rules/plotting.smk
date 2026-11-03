@@ -221,9 +221,30 @@ rule plot_navigability_over_peak_ratio:
         per_fl_combined_peak_size=expand("<output>/gp_map_{bp}/combined_peak_sizes_per_fl.txt", bp=config["bp_rules"]),
     output:
         "<output>/figures/navigability_over_peak_ratio_pop{pop_size}.pdf"
+    wildcard_constraints:
+        pop_size='[0-9]*'
     resources:
         mem_mb_per_cpu=config["min_mem_per_cpu"],
         runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_navigability_over_peak_ratio.py "
+        "-n {input.per_fl_navigability} "
+        "-f {input.phenotype_distribution} "
+        "-p {input.per_fl_combined_peak_size} "
+        "-o {output} "
+
+rule plot_navigability_over_peak_ratio_alt:
+    input:
+        per_fl_navigability=expand("<output>/gp_map_{bp}/navigability_per_fl_pop{{pop_size}}_{{alt}}.txt", bp=config["bp_rules"]),
+        phenotype_distribution=expand("<output>/gp_map_{bp}/phenotype_distribution.txt", bp=config["bp_rules"]),
+        per_fl_combined_peak_size=expand("<output>/gp_map_{bp}/combined_peak_sizes_per_fl_{{alt}}.txt", bp=config["bp_rules"]),
+    output:
+        "<output>/figures/navigability_over_peak_ratio_pop{pop_size}_{alt}.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    wildcard_constraints:
+        pop_size='[0-9]*'
     shell:
         "workflow/scripts/plotting/plot_navigability_over_peak_ratio.py "
         "-n {input.per_fl_navigability} "
@@ -263,20 +284,20 @@ rule plot_neigh_div_degeneracy_relation:
         "-n {input.nc_to_gt_files} "
         "-o {output} "
 
-# rule prob_of_diff_ph_for_gt_pairs:
-#     input:
-#         nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
-#         gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
-#     output:
-#         "<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"
-#     resources:
-#         mem_mb_per_cpu=config["min_mem_per_cpu"],
-#         runtime=config["max_runtime"],
-#     shell:
-#         "workflow/scripts/plotting/plot_prob_of_diff_ph_for_gt_pairs.py "
-#         "-g {input.gp_maps} "
-#         "-n {input.nc_to_gt_files} "
-#         "-o {output} "
+rule prob_of_diff_ph_for_gt_pairs:
+    input:
+        nc_to_gt_files=expand("<output>/gp_map_{bp}/nc_to_gt.txt", bp=config["bp_rules"]),
+        gp_maps=expand("<output>/gp_map_{bp}/gp_map.pickle", bp=config["bp_rules"])
+    output:
+        "<output>/figures/fig6b_prob_ph_diff_gt_pairs.pdf"
+    resources:
+        mem_mb_per_cpu=config["min_mem_per_cpu"],
+        runtime=config["max_runtime"],
+    shell:
+        "workflow/scripts/plotting/plot_prob_of_diff_ph_for_gt_pairs.py "
+        "-g {input.gp_maps} "
+        "-n {input.nc_to_gt_files} "
+        "-o {output} "
 
 rule plot_neigh_div_and_neigh_div_degen_correlation:
     input:

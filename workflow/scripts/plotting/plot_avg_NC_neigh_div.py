@@ -31,10 +31,18 @@ if __name__ ==  "__main__":
     for bp, nc_graph_f in enumerate(args.nc_graphs, start=1):
         nc_graph = pickle.load(open(nc_graph_f, "rb"))
         neigh_divs = []
+        nc_sizes = []
         for nc in nc_graph:
             neigh_div = len(np.unique([nc_graph.nodes[neigh]["phenotype"] for neigh in nc_graph.neighbors(nc)]))
             neigh_divs.append(neigh_div)
+
+            nc_sizes.append(np.log10(nc_graph.nodes[nc]["size"]))
+            # if bp in [4, 6, 9]:
+            #     ax2.scatter(np.log10(nc_graph.nodes[nc]["size"]), neigh_div/np.log10(nc_graph.nodes[nc]["size"]), color=f"C{bp-1}", s=1)
         
+        
+        # if bp in [4, 6, 9]:
+        #     ax2.hist(nc_sizes, alpha=0.3, color=f"C{bp-1}")
         neigh_divs_mean = np.mean(neigh_divs)
         neigh_divs_std = np.std(neigh_divs)
         # q1 = np.percentile(neigh_divs, q=25)
@@ -42,8 +50,8 @@ if __name__ ==  "__main__":
         
         ax1.bar(bp, neigh_divs_mean, yerr=neigh_divs_std, color="grey")
 
-        ax2.scatter(degen[bp], neigh_divs_mean, color=f"C{bp-1}", label=bp)
-        ax2.errorbar(degen[bp], neigh_divs_mean, yerr=neigh_divs_std, color=f"C{bp-1}")
+        # ax2.scatter(degen[bp], neigh_divs_mean, color=f"C{bp-1}", label=bp)
+        # ax2.errorbar(degen[bp], neigh_divs_mean, yerr=neigh_divs_std, color=f"C{bp-1}")
 
     ax1.set_xlabel("GP map", size=18)
     ax1.set_ylabel("Neighborhood diversity", size=18)
@@ -53,7 +61,7 @@ if __name__ ==  "__main__":
     p =[1, 2, 3, "can.", 5, 6, 7, 8, 9, 10]
     ax1.set_xticklabels(p) #(list(range(1, 11)))
 
-    ax2.legend()
+    # ax2.legend()
     
     plt.tight_layout()
     plt.savefig(args.output, format="pdf", dpi=30)
