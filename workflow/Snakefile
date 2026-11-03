@@ -11,6 +11,6 @@ include: "rules/plotting.smk"
 ### and using the reference ViennaRNA GP map
 rule all:
     input:
-        expand("<output>/gp_map_{bp}/gp_map_unfolded{n_unfolded}.txt", n_unfolded=8388608, bp=config["bp_rules"]), # n_unfolded=config["folding_params"]["n_unfolded"]),
+        expand("<output>/gp_map_{bp}/gp_map_unfolded{n_unfolded}.txt", n_unfolded=config["folding_params"]["n_unfolded"], bp=config["bp_rules"]),
         "<output>/gp_map_viennaRNA/gp_map.txt"
 
