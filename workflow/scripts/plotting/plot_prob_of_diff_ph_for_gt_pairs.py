@@ -68,8 +68,6 @@ def get_n_non_neutral_neighbors(gts, gp_map, n, unique_n, rng):
     print(f"Only found: {len(non_neut_neighs)} non-neutral neighbors")
     return non_neut_neighs
 
-def 25.
-
 
 if __name__ ==  "__main__":
     parser = argparse.ArgumentParser()
